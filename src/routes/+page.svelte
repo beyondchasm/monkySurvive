@@ -229,9 +229,9 @@
         monkeyIdCounter = 1;
 
         const fixedTotal = 20; // 각 원숭이의 총 stat 포인트
-        const baseHealth = 3;
-        const baseStrength = 1;
-        const baseIntelligence = 1;
+        const baseHealth = 10;
+        const baseStrength = 2;
+        const baseIntelligence = 2;
         const baseSpeed = 1;
         const baseTotal =
             baseHealth + baseStrength + baseIntelligence + baseSpeed; // 6
@@ -263,8 +263,8 @@
                     color,
                     name,
                     1,
-                    monkeyIdCounter++
-                )
+                    monkeyIdCounter++,
+                ),
             );
         }
     }
@@ -278,8 +278,8 @@
                 new Banana(
                     Math.random() * canvasWidth,
                     Math.random() * canvasHeight,
-                    special
-                )
+                    special,
+                ),
             );
         }
     }
@@ -388,34 +388,42 @@
         }
     }
 
-    // 스테이지 시작 함수 (이벤트 포함)
     function startStage() {
-        // 중간 이벤트: 30% 확률로 한 마리의 원숭이 stat 변경 이벤트 발생
-        if (Math.random() < 0.3 && monkeys.length > 0) {
-            let m = monkeys[Math.floor(Math.random() * monkeys.length)];
-            let oldStats = {
-                health: m.health,
-                strength: m.strength,
-                intelligence: m.intelligence,
-                speed: m.speed,
-                effectiveSpeed: m.effectiveSpeed,
-            };
-            m.health = Math.max(1, m.health + (Math.random() * 2 - 1));
-            m.strength = Math.max(1, m.strength + (Math.random() * 2 - 1));
-            m.intelligence = Math.max(
-                1,
-                m.intelligence + (Math.random() * 2 - 1)
-            );
-            m.speed = Math.max(0.5, m.speed + (Math.random() - 0.5));
-            m.effectiveSpeed = m.speed * (0.9 + m.intelligence / 10);
-            let newStats = {
-                health: m.health,
-                strength: m.strength,
-                intelligence: m.intelligence,
-                speed: m.speed,
-                effectiveSpeed: m.effectiveSpeed,
-            };
-            eventMsg = `[시스템메시지] ${m.name} 원숭이의 개체값이 변경 되었습니다.`;
+        // 매 스테이지마다 하위순위 원숭이에게 보너스를 적용 (항상 실행)
+
+        if (monkeys.length > 0) {
+            let survivors = rankedMonkeys.filter((monkey) => monkey.health > 0);
+            // reactive 변수 rankedMonkeys를 이용해 하위순위 원숭이 선택
+            let m = survivors[survivors.length - 1];
+            // 0: 체력, 1: 힘, 2: 속도, 3: 지능 중 하나 선택
+            let statIndex = Math.floor(Math.random() * 4);
+            // 변경량: 0.05 ~ 0.25 사이의 양 (필요에 따라 조절)
+            let changeAmount = Math.random() * 0.2 + 0.05;
+            let statName = "";
+            switch (statIndex) {
+                case 0:
+                    m.health = Math.max(5, m.health + changeAmount);
+                    statName = "체력이";
+                    break;
+                case 1:
+                    m.strength = Math.max(1, m.strength + changeAmount);
+                    statName = "힘이";
+                    break;
+                case 2:
+                    m.speed = Math.max(0.5, m.speed + changeAmount);
+                    const clampedSpeed = Math.min(m.speed, 5);
+                    // effectiveSpeed에 제곱근 감쇠를 적용해 극단적 속도 차이가 덜 반영되도록 함
+                    m.effectiveSpeed =
+                        Math.min(Math.pow(clampedSpeed, 0.7), 5) *
+                        (0.8 + m.intelligence / 15);
+                    statName = "속도가";
+                    break;
+                case 3:
+                    m.intelligence = Math.max(1, m.intelligence + changeAmount);
+                    statName = "지능이";
+                    break;
+            }
+            eventMsg = `[시스템메시지] ${m.name} 원숭이의 ${statName} ${changeAmount.toFixed(3)} 증가했습니다.`;
         } else {
             eventMsg = "[시스템메시지] 이벤트가 없습니다.";
         }
@@ -601,9 +609,15 @@
         {#if !guessing}
             <button on:click={togglePauseAndResume}>{toggleBtnNm}</button>
         {/if}
-        <button on:click={() => setSpeed(1)} class:active={playSpeed === 1}>1배속</button>
-        <button on:click={() => setSpeed(2)} class:active={playSpeed === 2}>2배속</button>
-        <button on:click={() => setSpeed(3)} class:active={playSpeed === 3}>3배속</button>
+        <button on:click={() => setSpeed(1)} class:active={playSpeed === 1}
+            >1배속</button
+        >
+        <button on:click={() => setSpeed(2)} class:active={playSpeed === 2}
+            >2배속</button
+        >
+        <button on:click={() => setSpeed(3)} class:active={playSpeed === 3}
+            >3배속</button
+        >
     </div>
     {#if guessing}
         <div class="game-prompt">
@@ -623,11 +637,16 @@
     <div class="monkey-list">
         <h3>원숭이 순위 목록 (총 {monkeys.length} 마리)</h3>
         {#each rankedMonkeys as monkey (monkey.id)}
-            <div class="monkey-item {monkey.health <= 0 ? 'inactive' : ''}" on:click={() => selectMonkey(monkey)}>
+            <div
+                class="monkey-item {monkey.health <= 0 ? 'inactive' : ''}"
+                on:click={() => selectMonkey(monkey)}
+            >
                 <p>{monkey.name} (ID:{monkey.id})</p>
                 <p>순위: {monkey.rank} | HP: {monkey.health.toFixed(3)}</p>
                 <p>
-                    힘: {monkey.strength.toFixed(2)} | 속도: {monkey.speed.toFixed(2)} | 지능: {monkey.intelligence.toFixed(2)}
+                    힘: {monkey.strength.toFixed(2)} | 속도: {monkey.speed.toFixed(
+                        2,
+                    )} | 지능: {monkey.intelligence.toFixed(2)}
                 </p>
             </div>
         {/each}
