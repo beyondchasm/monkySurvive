@@ -28,8 +28,8 @@
     let canvas;
     let ctx;
     let stage = 1;
-    const canvasWidth = 800;
-    const canvasHeight = 800;
+    const canvasWidth = 600;
+    const canvasHeight = 600;
 
     let monkeys = []; // 현재 살아있는 원숭이
     let deadMonkeys = []; // 탈락한 원숭이 목록
@@ -633,24 +633,26 @@
         <span class="system-message">{eventMsg}</span>
         <canvas bind:this={canvas} on:click={handleCanvasClick}></canvas>
     </div>
-    <!-- 왼쪽: 원숭이 목록 -->
-    <div class="monkey-list">
-        <h3>원숭이 순위 목록 (총 {monkeys.length} 마리)</h3>
-        {#each rankedMonkeys as monkey (monkey.id)}
-            <div
-                class="monkey-item {monkey.health <= 0 ? 'inactive' : ''}"
-                on:click={() => selectMonkey(monkey)}
-            >
-                <p>{monkey.name} (ID:{monkey.id})</p>
-                <p>순위: {monkey.rank} | HP: {monkey.health.toFixed(3)}</p>
-                <p>
-                    힘: {monkey.strength.toFixed(2)} | 속도: {monkey.speed.toFixed(
-                        2,
-                    )} | 지능: {monkey.intelligence.toFixed(2)}
-                </p>
-            </div>
-        {/each}
+<!-- 원숭이 목록 부분 -->
+<div class="monkey-list">
+    <div class="monkey-list-header">
+      <h3>원숭이 순위 목록 (총 {monkeys.length} 마리)</h3>
     </div>
+    {#each rankedMonkeys as monkey (monkey.id)}
+      <div
+        class="monkey-item {monkey.health <= 0 ? 'inactive' : ''}"
+        on:click={() => selectMonkey(monkey)}
+      >
+        <p>{monkey.name} (ID:{monkey.id})</p>
+        <p>순위: {monkey.rank} | HP: {monkey.health.toFixed(3)}</p>
+        <p>
+          힘: {monkey.strength.toFixed(2)} | 속도: {monkey.speed.toFixed(
+            2,
+          )} | 지능: {monkey.intelligence.toFixed(2)}
+        </p>
+      </div>
+    {/each}
+  </div>
 </div>
 
 <!-- 게임 모드 결과 모달 (선택한 원숭이가 최종 생존자인지 결과 표시) -->
@@ -670,6 +672,36 @@
         </div>
     </div>
 {/if}
+
+<!-- 기존 마크업 끝난 후 아래에 푸터 섹션 추가 -->
+<footer class="footer">
+    <div class="blog-info">
+      <h5>뭐라도 만드는 오물개 입니다. 뭐라도 만들어 봤습니다.</h5>
+      <a href="https://blog.omoolgae.site" target="_blank">블로그 방문</a>
+    </div>
+    <div class="visitor-counters">
+        <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fmonky-survive.vercel.app&count_bg=%23575EFF&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=%EB%B0%A9%EB%AC%B8%EC%9E%90%EC%88%98&edge_flat=false"/></a>
+    </div>
+    <div class="comments">
+        <p>MonkySurvive와 관련된 의견을 자유롭게 남겨주세요. 여력이 된다면 반영하겠습니다.</p>
+      <!-- giscus 댓글 시스템 -->
+      <script src="https://giscus.app/client.js"
+      data-repo="beyondchasm/monkySurvive"
+      data-repo-id="R_kgDON-ijmw"
+      data-category="General"
+      data-category-id="DIC_kwDON-ijm84CnWCF"
+      data-mapping="url"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="bottom"
+      data-theme="dark"
+      data-lang="ko"
+      crossorigin="anonymous"
+      async>
+</script>
+    </div>
+  </footer>
 
 <style>
     .header {
@@ -737,6 +769,14 @@
         border-radius: 8px;
         margin: 10px;
     }
+    .monkey-list-header {
+  position: sticky;
+  top: 0;
+  background: #555;
+  padding: 10px;
+  z-index: 1;
+  border-bottom: 1px solid #777;
+}
     .monkey-item {
         padding: 8px;
         margin-bottom: 6px;
@@ -786,17 +826,39 @@
         margin: 0;
         font-family: Arial, sans-serif;
     }
-
+  .footer {
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: left;
+    margin-top: 20px;
+  }
+  .footer .blog-info {
+    margin-bottom: 15px;
+  }
+  .footer .blog-info a {
+    color: #00aaff;
+    font-size : 14px;
+    text-decoration: none;
+  }
+  .footer .visitor-counters {
+    margin-bottom: 15px;
+  }
+  .footer .comments {
+    margin-top: 20px;
+    font-size : 14px;
+  }
     /* 모바일 반응형 스타일 */
     @media (max-width: 600px) {
         .container {
             flex-direction: column;
             align-items: center;
         }
-        .monkey-list,
+        .monkey-list, 
         .canvas-container {
-            width: 90%;
+            width: 95%;
             margin: 10px 0;
+            
         }
         canvas {
             width: 100%;
