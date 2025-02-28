@@ -1,20 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 
 <head>
 	<meta charset="utf-8" />
 	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- 주요 키워드를 제목/설명에 반영 -->
+	<title>오물개 몽키서바이벌 - 원숭이들의 생존 게임</title>
+	<meta name="description" content="오물개의 몽키서바이벌! 20마리 원숭이들의 바나나 쟁탈전, 지금 바로 확인하세요." />
+	<meta name="keywords" content="오물개, 몽키서바이벌, 원숭이 서바이벌, monkey, survival, 시뮬레이션, 게임" />
+	<meta name="author" content="오물개" />
+
+	<!-- 오픈그래프 (SNS 미리보기) -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="오물개 몽키서바이벌 - 원숭이들의 생존 게임" />
+	<meta property="og:description" content="오물개의 몽키서바이벌! 20마리 원숭이들의 치열한 바나나 쟁탈전 시뮬레이션." />
+	<!-- 아래 이미지는 실제 OG 이미지가 있으면 써주세요! -->
+	<meta property="og:image" content="%sveltekit.assets%/monkey-survival-og-image.png" />
+	<meta property="og:url" content="monky-survive.omoolgae.site" />
+
+	<!-- sveltekit 헤드 세팅 -->
 	%sveltekit.head%
+
 	<!-- Google tag (gtag.js) -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-C6WHTBXY80"></script>
 	<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
-
 		gtag('config', 'G-C6WHTBXY80');
 	</script>
+
+	<!-- 구글 애드센스 (adsbygoogle) -->
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2668656366673635"
 		crossorigin="anonymous"></script>
 </head>
